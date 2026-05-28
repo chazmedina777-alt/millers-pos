@@ -21,6 +21,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
   const [showPayment, setShowPayment] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
   const [checkDiscounts, setCheckDiscounts] = useState([]);
   
   const discountOptions = [
@@ -55,6 +56,18 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
   // Current item being modified
   const currentModTask = modifierQueue[0] || null;
 
+  const getCookTimeMs = (item) => {
+    if (item.isApp) return 10 * 60 * 1000;
+    const min15 = ['burgers', 'zingers', 'seafood', 'house'];
+    const min10 = ['starters', 'salads', 'soups', 'kids'];
+    const min5 = ['desserts'];
+    
+    if (min15.includes(item.categoryId)) return 15 * 60 * 1000;
+    if (min10.includes(item.categoryId)) return 10 * 60 * 1000;
+    if (min5.includes(item.categoryId)) return 5 * 60 * 1000;
+    return 2 * 60 * 1000; // drinks
+  };
+
   // --- KITCHEN SIMULATOR TIMER ---
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,10 +78,10 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
         let changed = false;
         const newItems = prev.map(item => {
           // Transition HELD -> SENT
-          if (item.status === 'HELD' && now >= item.holdReleaseTime) {
+          if (item.status === 'HELD' && !item.isManualHold && now >= item.holdReleaseTime) {
             changed = true;
             logAction(`AUTO_SEND_HELD: ${item.name}`);
-            return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + 30000 }; // 30 sec cook
+            return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + getCookTimeMs(item) };
           }
           // Transition SENT -> UP
           if (item.status === 'SENT' && now >= item.cookCompleteTime) {
@@ -185,17 +198,27 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
   };
 
   // --- UTILITY ACTIONS ---
-  const handleHold = () => {
+  const handleHoldClick = () => {
     if (selectedItemIds.length === 0) return;
+    setShowHoldModal(true);
+  };
+
+  const handleHoldSubmit = (minutes) => {
     const now = Date.now();
     setOrderItems(orderItems.map(item => {
       if (selectedItemIds.includes(item.orderItemId) && item.status === 'PENDING') {
-        logAction(`HOLD_ITEM: ${item.id}`);
-        return { ...item, status: 'HELD', holdReleaseTime: now + 15000 }; // 15 seconds for practice
+        logAction(`HOLD_ITEM: ${item.id} MIN:${minutes}`);
+        return { 
+          ...item, 
+          status: 'HELD', 
+          isManualHold: minutes === 'manual',
+          holdReleaseTime: minutes === 'manual' ? null : now + (minutes * 60 * 1000) 
+        };
       }
       return item;
     }));
     setSelectedItemIds([]);
+    setShowHoldModal(false);
   };
 
   const handleDelete = () => {
@@ -242,9 +265,9 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
   const handleSend = () => {
     const now = Date.now();
     setOrderItems(orderItems.map(item => {
-      if (item.status === 'PENDING') {
+      if (item.status === 'PENDING' || (item.status === 'HELD' && selectedItemIds.includes(item.orderItemId))) {
         logAction(`SEND_ITEM: ${item.id}`);
-        return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + 30000 };
+        return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + getCookTimeMs(item), isManualHold: false };
       }
       return item;
     }));
@@ -264,7 +287,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
     setOrderItems(orderItems.map(item => {
       if (selectedItemIds.includes(item.orderItemId) && item.status === 'PENDING') {
         logAction(`SEND_AS_APP: ${item.id}`);
-        return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + 15000, isApp: true }; // Fast cook
+        return { ...item, status: 'SENT', sentAt: now, cookCompleteTime: now + (10 * 60 * 1000), isApp: true };
       }
       return item;
     }));
@@ -392,7 +415,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
               statusText = `[APP]`;
             } else if (item.status === 'HELD') {
               statusClass = 'text-orange-500 font-bold';
-              statusText = `[HOLD ${formatTimeDiff(now, item.holdReleaseTime)}]`;
+              statusText = item.isManualHold ? `[HOLD]` : `[HOLD ${formatTimeDiff(now, item.holdReleaseTime)}]`;
             } else if (item.status === 'SENT') {
               statusClass = 'text-red-600';
               statusText = `[${formatTimeDiff(item.sentAt, now)}]`;
@@ -511,7 +534,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
         <button className="aloha-btn util-btn" onClick={() => setShowReceipt(true)}>Get Check</button>
         <button className="aloha-btn util-btn" onClick={() => setShowDiscountModal(true)}>Discount</button>
         <button className="aloha-btn util-btn" onClick={handleRepeat}>Repeat</button>
-        <button className="aloha-btn util-btn" onClick={handleHold}>Hold</button>
+        <button className="aloha-btn util-btn" onClick={handleHoldClick}>Hold</button>
         <button className="aloha-btn util-btn" onClick={handleModify}>Modify</button>
         <button className="aloha-btn util-btn" onClick={handleDelete}>Delete</button>
       </div>
@@ -521,7 +544,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
         <div className="modal-overlay" onClick={() => setShowReceipt(false)}>
           <div className="bg-white text-black p-8 font-mono shadow-lg rounded" style={{ width: '350px' }} onClick={e => e.stopPropagation()}>
             <div className="text-center mb-4">
-              <h2 className="text-xl font-bold">Miller's Ale House</h2>
+              <h2 className="text-xl font-bold">Sports Bar</h2>
               <p>Table {tableInfo.tableNumber} - Server {serverName}</p>
               <p>{new Date().toLocaleString()}</p>
             </div>
@@ -598,6 +621,23 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
               ))}
             </div>
             <button className="aloha-btn bg-red text-white w-full" onClick={() => setShowDiscountModal(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {showHoldModal && (
+        <div className="modal-overlay">
+          <div className="modal-content p-6 text-center">
+            <h2 className="text-xl font-bold mb-4">Hold Options</h2>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <button className="aloha-btn p-4 text-red-600 font-bold" onClick={() => handleHoldSubmit('manual')}>Manual Fire</button>
+              <button className="aloha-btn p-4" onClick={() => handleHoldSubmit(5)}>Hold 5 Min</button>
+              <button className="aloha-btn p-4" onClick={() => handleHoldSubmit(10)}>Hold 10 Min</button>
+              <button className="aloha-btn p-4" onClick={() => handleHoldSubmit(15)}>Hold 15 Min</button>
+              <button className="aloha-btn p-4" onClick={() => handleHoldSubmit(20)}>Hold 20 Min</button>
+              <button className="aloha-btn p-4" onClick={() => handleHoldSubmit(25)}>Hold 25 Min</button>
+            </div>
+            <button className="aloha-btn bg-red text-white w-full" onClick={() => setShowHoldModal(false)}>Cancel</button>
           </div>
         </div>
       )}

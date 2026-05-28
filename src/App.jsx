@@ -41,6 +41,9 @@ function App() {
       ) : (
         <POSSystem serverName={serverName} tableInfo={tableInfo} onCloseTable={handleCloseTable} />
       )}
+      <div style={{ position: 'fixed', bottom: '4px', right: '8px', color: 'rgba(255, 255, 255, 0.4)', fontSize: '0.75rem', zIndex: 9999, pointerEvents: 'none' }}>
+        Built by GetsAttention.com &copy; 2026
+      </div>
     </div>
   )
 }

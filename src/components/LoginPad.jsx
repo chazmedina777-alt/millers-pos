@@ -19,7 +19,7 @@ export default function LoginPad({ onLogin }) {
     <div className="login-container flex flex-col items-center justify-center h-full w-full">
       <div className="login-box p-4 flex flex-col items-center">
         <Lock size={48} className="lock-icon mb-4" />
-        <h1 className="text-2xl font-bold mb-6">Miller's Ale House POS</h1>
+        <h1 className="text-2xl font-bold mb-6">Sports Bar POS</h1>
         
         <div className="pin-display mb-6 flex items-center justify-center">
           {pin.padEnd(4, '•').split('').map((char, i) => (
