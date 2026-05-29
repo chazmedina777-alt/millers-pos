@@ -28,7 +28,7 @@ export const menuData = {
     { id: 's5', categoryId: 'starters', name: 'Buffalo Chicken Dip', price: 11.99, image: 'buffalo_dip_img_1779983355225.png', printStation: 'expo', tags: ['food'] },
     { id: 's6', categoryId: 'starters', name: 'Warm Bavarian Pretzels', price: 10.49, image: 'pretzel_bites.png', printStation: 'expo', tags: ['food'] },
     { id: 's7', categoryId: 'starters', name: 'Loaded Cheese Fries', price: 11.99, image: 'loaded_fries.png', requiresModifiers: true, modifierGroupIds: ['melt_mods'], printStation: 'expo', tags: ['food'] },
-    { id: 's8', categoryId: 'starters', name: 'Zinger Flatbread', price: 13.49, image: 'zinger_flatbread.png', printStation: 'expo', tags: ['food'] },
+    { id: 's8', categoryId: 'starters', name: 'Chicken Finger Flatbread', price: 13.49, image: 'zinger_flatbread.png', printStation: 'expo', tags: ['food'] },
     { id: 's9', categoryId: 'starters', name: 'Fried Pickle Spears', price: 9.49, printStation: 'expo', tags: ['food'] },
     { id: 's10', categoryId: 'starters', name: 'Chicken Quesadilla', price: 12.49, printStation: 'expo', tags: ['food'] },
     { id: 's11', categoryId: 'starters', name: 'Sampler Platter', price: 16.99, printStation: 'expo', tags: ['food'] },
@@ -36,13 +36,13 @@ export const menuData = {
     { id: 's13', categoryId: 'starters', name: 'Potstickers', price: 10.99, printStation: 'expo', tags: ['food'] },
     { id: 's14', categoryId: 'starters', name: 'Spicy Garlic Edamame', price: 8.99, printStation: 'expo', tags: ['food'] },
 
-    // --- ZINGERS & WINGS ---
-    { id: 'z1', categoryId: 'zingers', name: 'Zingers® (Boneless)', price: 14.99, image: 'wings_img_1779983088830.png', requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing'], printStation: 'expo', tags: ['food'] },
-    { id: 'z2', categoryId: 'zingers', name: 'Zingers Mountain Melt®', price: 17.99, image: 'zingers_melt.png', requiresModifiers: true, modifierGroupIds: ['sauces', 'melt_mods'], printStation: 'expo', tags: ['food'] },
+    // --- APPS & WINGS ---
+    { id: 'z1', categoryId: 'zingers', name: 'Chicken Fingers® (Boneless)', price: 14.99, image: 'wings_img_1779983088830.png', requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing'], printStation: 'expo', tags: ['food'] },
+    { id: 'z2', categoryId: 'zingers', name: 'Chicken Fingers Mountain Melt®', price: 17.99, image: 'zingers_melt.png', requiresModifiers: true, modifierGroupIds: ['sauces', 'melt_mods'], printStation: 'expo', tags: ['food'] },
     { id: 'z3', categoryId: 'zingers', name: 'Traditional Wings (10)', price: 16.99, requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing', 'wing_prep'], printStation: 'expo', tags: ['food'] },
     { id: 'z4', categoryId: 'zingers', name: 'Traditional Wings (20)', price: 28.99, requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing', 'wing_prep'], printStation: 'expo', tags: ['food'] },
-    { id: 'z5', categoryId: 'zingers', name: 'Zingers Mac & Cheese', price: 16.49, image: 'zingers_mac.png', requiresModifiers: true, modifierGroupIds: ['sauces'], printStation: 'expo', tags: ['food'] },
-    { id: 'z6', categoryId: 'zingers', name: 'Zingers® (Half Order)', price: 10.99, requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing'], printStation: 'expo', tags: ['food'] },
+    { id: 'z5', categoryId: 'zingers', name: 'Chicken Fingers Mac & Cheese', price: 16.49, image: 'zingers_mac.png', requiresModifiers: true, modifierGroupIds: ['sauces'], printStation: 'expo', tags: ['food'] },
+    { id: 'z6', categoryId: 'zingers', name: 'Chicken Fingers® (Half Order)', price: 10.99, requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing'], printStation: 'expo', tags: ['food'] },
     { id: 'z7', categoryId: 'zingers', name: 'Traditional Wings (5)', price: 10.99, requiresModifiers: true, modifierGroupIds: ['sauces', 'dressing', 'wing_prep'], printStation: 'expo', tags: ['food'] },
 
     // --- BURGERS & SANDWICHES ---
