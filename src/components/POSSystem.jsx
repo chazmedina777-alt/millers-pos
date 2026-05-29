@@ -395,7 +395,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable, initial
           <button className="aloha-btn">Order</button>
           <button className="aloha-btn">To Go</button>
           <button className="aloha-btn" onClick={handleAsApp}>AS APP</button>
-          <button className="aloha-btn" onClick={handleSend}>SEND</button>
+          <button className="aloha-btn" style={{ background: 'linear-gradient(to bottom, #28a745, #1e7e34)', color: 'white', fontWeight: 'bold', fontSize: '1.1rem' }} onClick={handleSend}>SEND ORDER</button>
         </div>
       </div>
 
