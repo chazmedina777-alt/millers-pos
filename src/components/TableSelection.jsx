@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Users, LayoutGrid } from 'lucide-react';
 import { floorPlan } from '../data/tables';
 
-export default function TableSelection({ serverName, onSelectTable, onLogout }) {
+export default function TableSelection({ serverName, onSelectTable, onLogout, tableOrders }) {
   const [activeSection, setActiveSection] = useState(floorPlan[0].id);
   const [selectedTable, setSelectedTable] = useState(null);
   const [guests, setGuests] = useState('');
@@ -92,7 +92,9 @@ export default function TableSelection({ serverName, onSelectTable, onLogout }) 
 
       {/* 2D Floor Plan Container */}
       <div className="flex-1 relative m-4 rounded" style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-color)' }}>
-        {activeSectionData.tables.map(table => (
+        {activeSectionData.tables.map(table => {
+          const isOccupied = tableOrders && tableOrders[table.id] && tableOrders[table.id].items && tableOrders[table.id].items.length > 0;
+          return (
           <button
             key={table.id}
             onClick={() => handleTableClick(table)}
@@ -103,14 +105,15 @@ export default function TableSelection({ serverName, onSelectTable, onLogout }) 
               width: table.width, 
               height: table.height,
               borderRadius: table.shape === 'circle' ? '50%' : '8px',
-              background: 'var(--bg-button)', 
-              borderColor: 'var(--border-color)',
+              background: isOccupied ? 'var(--accent-green)' : 'var(--bg-button)', 
+              borderColor: isOccupied ? '#fff' : 'var(--border-color)',
+              color: isOccupied ? '#fff' : 'inherit',
               transform: 'translate(-50%, -50%)', // Center the element on the coordinate
             }}
           >
             <span>{table.label}</span>
           </button>
-        ))}
+        )})}
       </div>
     </div>
   );

@@ -3,10 +3,10 @@ import { menuData } from '../data/menu';
 import './POSSystem.css';
 import ModifierModal from './ModifierModal';
 
-export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
+export default function POSSystem({ serverName, tableInfo, onCloseTable, initialItems, onSaveOrder }) {
   const [activeCategory, setActiveCategory] = useState(menuData.categories[0].id);
   const [activeSeat, setActiveSeat] = useState(1);
-  const [orderItems, setOrderItems] = useState([]);
+  const [orderItems, setOrderItems] = useState(initialItems || []);
   const [selectedItemIds, setSelectedItemIds] = useState([]); // Array of selected items on ticket
   const [modifierQueue, setModifierQueue] = useState([]); 
   const [agePromptItem, setAgePromptItem] = useState(null);
@@ -276,7 +276,13 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
 
   const handleDone = () => {
     handleSend();
+    onSaveOrder(tableInfo.tableNumber, orderItems);
     console.log("T-LOG DUMP:", tLog);
+    onCloseTable();
+  };
+
+  const handleFloor = () => {
+    onSaveOrder(tableInfo.tableNumber, orderItems);
     onCloseTable();
   };
 
@@ -380,7 +386,7 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
       {/* 1. TOP BAR ZONE */}
       <div className="pos-top-bar">
         <div className="top-block">
-          <button className="aloha-btn">Table</button>
+          <button className="aloha-btn" onClick={handleFloor} style={{ background: 'linear-gradient(to bottom, #ffc107, #e6a800)', color: '#000', padding: '8px 16px', fontWeight: '900', fontSize: '1.1rem' }}>Tables</button>
           <button className="aloha-btn" onClick={() => setOrderItems([])}>Clear</button>
           <button className={`aloha-btn ${isSplitMode ? 'bg-orange text-black' : ''}`} onClick={() => setIsSplitMode(!isSplitMode)}>Split</button>
         </div>
@@ -518,12 +524,15 @@ export default function POSSystem({ serverName, tableInfo, onCloseTable }) {
               key={item.id} 
               className="aloha-btn item-btn" 
               onClick={() => handleItemClick(item)}
-              style={{ position: 'relative', overflow: 'hidden' }}
+              style={{ position: 'relative', overflow: 'hidden', padding: 0, border: '1px solid #555', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
             >
-              {item.image && <img src={`/${item.image}`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} />}
-              <span style={{ position: 'relative', zIndex: 1, textShadow: '1px 1px 2px black, 0px 0px 4px rgba(0,0,0,0.8)' }}>
-                {item.name}
-              </span>
+              {item.image && <img src={`/${item.image}`} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.95) 100%)', zIndex: 1 }}></div>
+              <div style={{ position: 'relative', zIndex: 2, width: '100%', padding: '6px 4px', textAlign: 'center' }}>
+                <span style={{ color: '#ffffff', fontWeight: 900, fontSize: '0.95rem' }}>
+                  {item.name}
+                </span>
+              </div>
             </button>
           ))}
         </div>
