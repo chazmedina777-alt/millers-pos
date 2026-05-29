@@ -1,7 +1,7 @@
 export const menuData = {
   categories: [
     { id: 'starters', name: 'Starters' },
-    { id: 'zingers', name: 'Apps & Wings' },
+    { id: 'zingers', name: 'Apps' },
     { id: 'burgers', name: 'Burgers & Sandwiches' },
     { id: 'seafood', name: 'Seafood, Steak & Pasta' },
     { id: 'salads', name: 'Soups & Salads' },
